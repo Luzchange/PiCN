@@ -1,0 +1,39 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pyaudio
+
+# Set the sample rate and number of channels
+sample_rate = 44100
+channels = 2
+
+# Create a PyAudio object
+p = pyaudio.PyAudio()
+
+# Open a stream for recording
+stream = p.open(format=pyaudio.paInt16,
+                channels=channels,
+                rate=sample_rate,
+                input=True,
+                frames_per_buffer=1024)
+
+# Start recording
+frames = []
+while True:
+    data = stream.read(1024)
+    frames.append(data)
+
+    # Check if the user has pressed `Ctrl`+`C` to stop recording
+    if input() == "q":
+        break
+
+# Stop recording
+stream.stop_stream()
+stream.close()
+
+# Convert the recorded audio to a NumPy array
+data = np.frombuffer(b''.join(frames), dtype=np.int16)
+
+# Plot the NumPy array as a graph
+plt.plot(data)
+plt.show()
+
